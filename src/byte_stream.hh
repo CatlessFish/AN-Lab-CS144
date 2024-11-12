@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <vector>
 
 class Reader;
 class Writer;
@@ -25,6 +26,12 @@ protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
   uint64_t capacity_;
   bool error_ {};
+  bool closed_ {false};
+  std::string buffer_ {}; // 使用std::vector作为循环缓冲区
+  uint64_t bytes_pushed_ {0};
+  uint64_t bytes_popped_ {0};
+
+  void debug() const;
 };
 
 class Writer : public ByteStream
@@ -36,6 +43,7 @@ public:
   bool is_closed() const;              // Has the stream been closed?
   uint64_t available_capacity() const; // How many bytes can be pushed to the stream right now?
   uint64_t bytes_pushed() const;       // Total number of bytes cumulatively pushed to the stream
+
 };
 
 class Reader : public ByteStream
